@@ -5,6 +5,8 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
 
     private int int_today;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,9 +46,19 @@ public class MainActivity extends AppCompatActivity {
         Init();
         //Fetch data from API
         FetchData();
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                FetchData();
+                swipeRefreshLayout.setRefreshing(false);
+                //Toast.makeText(MainActivity.this, "Data refreshed!", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void FetchData() {
+        //show progress dialog
+        ShowDialog(this);
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         String apiUrl = "https://api.apify.com/v2/key-value-stores/6t65lJVfs3d8s6aKc/records/LATEST?disableRedirect=true";
         JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(
@@ -61,9 +74,9 @@ public class MainActivity extends AppCompatActivity {
                             str_active = result.getString("activeCases");
                             str_death = result.getString("deceased");
                             str_recovered = result.getString("recovered");
-                            Handler delayToshowProgess = new Handler();
 
-                            delayToshowProgess.postDelayed(new Runnable() {
+                            Handler delayToShowProgess = new Handler()
+                            delayToShowProgess.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     //Setting text in the textview
@@ -74,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
                                     int_today = Integer.parseInt(str_total)
                                             - (Integer.parseInt(str_total) + Integer.parseInt(str_death));
                                     tv_todaynumber1.setText(NumberFormat.getInstance().format(int_today));
+                                DismissDialog();
                                 }
                             }, 1000);
 
@@ -85,13 +99,21 @@ public class MainActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
                     }
                 });
         requestQueue.add(jsonObjectRequest);
-
     }
-
+    public void ShowDialog(Context context) {
+        //setting up progress dialog
+        progressDialog = new ProgressDialog(context);
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.progress_dialog);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+    }
+    public void DismissDialog() {
+        progressDialog.dismiss();
+    }
     private void Init() {
         tv_totalnumber1 = findViewById(R.id.totalnaumber1);
         tv_activenumber1 = findViewById(R.id.activenumber1);
