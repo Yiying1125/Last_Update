@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
                             str_death = result.getString("deceased");
                             str_recovered = result.getString("recovered");
 
-                            Handler delayToShowProgess = new Handler()
+                            Handler delayToShowProgess = new Handler();
                             delayToShowProgess.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
