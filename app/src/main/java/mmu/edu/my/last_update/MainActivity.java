@@ -31,7 +31,7 @@ import java.text.NumberFormat;
 public class MainActivity extends AppCompatActivity {
 
     private TextView tv_totalnumber1, tv_activenumber1, tv_deathnumber1, tv_recoverednumber1, tv_todaynumber1;
-    private String str_total, str_active, str_death, str_recovered, str_today;
+    private String str_total, str_active, str_death, str_recovered, str_today, str_tadaycal;
     private SwipeRefreshLayout swipeRefreshLayout;
 
     private int int_today;
@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         Init();
         //Fetch data from API
         FetchData();
+
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -115,11 +116,11 @@ public class MainActivity extends AppCompatActivity {
         progressDialog.dismiss();
     }
     private void Init() {
-        tv_totalnumber1 = findViewById(R.id.totalnaumber1);
-        tv_activenumber1 = findViewById(R.id.activenumber1);
-        tv_deathnumber1= findViewById(R.id.deathnumber1);
-        tv_recoverednumber1= findViewById(R.id.recovernumber1);
-        tv_todaynumber1 = findViewById(R.id.todaynumber1);
+        tv_totalnumber1 = findViewById(R.id.totalnumber2);
+        tv_activenumber1 = findViewById(R.id.activenumber2);
+        tv_deathnumber1= findViewById(R.id.deathnumber2);
+        tv_recoverednumber1= findViewById(R.id.recoverednumber2);
+        tv_todaynumber1 = findViewById(R.id.todaynumber2);
         swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
     }
 }
