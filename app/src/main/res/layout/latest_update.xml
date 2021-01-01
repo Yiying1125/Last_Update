@@ -130,7 +130,7 @@
                         android:text=""
                         android:gravity="center"
                         android:textColor="@color/white"
-                        android:textSize="30dp"
+                        android:textSize="24dp"
                         android:textStyle="bold"/>
                 </androidx.cardview.widget.CardView>
 
@@ -155,7 +155,7 @@
                         android:text=""
                         android:gravity="center"
                         android:textColor="@color/white"
-                        android:textSize="30dp"
+                        android:textSize="24dp"
                         android:textStyle="bold"/>
                 </androidx.cardview.widget.CardView>
 
@@ -177,7 +177,7 @@
                         android:background="@color/bright_red"
                         android:text=""
                         android:gravity="center"
-                        android:textSize="30dp"
+                        android:textSize="24dp"
                         android:textColor="@color/white"
                         android:textStyle="bold" />
                 </androidx.cardview.widget.CardView>
@@ -260,7 +260,7 @@
                         android:gravity="center"
                         android:text=""
                         android:textColor="@color/white"
-                        android:textSize="30dp"
+                        android:textSize="24dp"
                         android:textStyle="bold" />
                 </androidx.cardview.widget.CardView>
 
@@ -285,7 +285,7 @@
                         android:gravity="center"
                         android:text=""
                         android:textColor="@color/white"
-                        android:textSize="30dp"
+                        android:textSize="24dp"
                         android:textStyle="bold" />
                 </androidx.cardview.widget.CardView>
             </GridLayout>
