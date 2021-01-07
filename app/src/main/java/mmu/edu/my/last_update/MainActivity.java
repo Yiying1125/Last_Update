@@ -13,13 +13,16 @@ import android.os.Handler;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,7 +31,7 @@ import java.text.NumberFormat;
 public class MainActivity extends AppCompatActivity {
 
     private TextView tv_totalnumber1, tv_activenumber1, tv_deathnumber1, tv_recoverednumber1, tv_todaynumber1;
-    private String str_total, str_active, str_death, str_recovered, str_today, str_tadaycal;
+    private String str_total, str_active, str_death, str_recovered, str_today, str_todaycal;
     private SwipeRefreshLayout swipeRefreshLayout;
     private int int_today;
     private ProgressDialog progressDialog;
@@ -60,19 +63,23 @@ public class MainActivity extends AppCompatActivity {
         //show progress dialog
         ShowDialog(this);
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String apiUrl = "https://api.apify.com/v2/key-value-stores/6t65lJVfs3d8s6aKc/records/LATEST?disableRedirect=true";
-        JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(
+        String apiUrl = "https://api.apify.com/v2/datasets/7Fdb90FMDLZir2ROo/items?format=json&clean=1";
+        JsonArrayRequest jsonArrayRequest=new JsonArrayRequest(
                 Request.Method.GET,
                 apiUrl,
                 null,
-                new Response.Listener<JSONObject>() {
+                new Response.Listener<JSONArray>() {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(JSONArray response) {
+
                         try {
-                            str_total = response.getString("testedPositive");
-                            str_active = response.getString("activeCases");
-                            str_death = response.getString("deceased");
-                            str_recovered = response.getString("recovered");
+                                JSONObject result=response.getJSONObject(response.length()-1);
+                                JSONObject yesterday_result=response.getJSONObject(response.length()-2);
+                                str_total = result.getString("testedPositive");
+                                str_active = result.getString("activeCases");
+                                str_death = result.getString("deceased");
+                                str_recovered = result.getString("recovered");
+                                str_todaycal= yesterday_result.getString("testedPositive");
 
                             Handler delayToShowProgress = new Handler();
                             delayToShowProgress.postDelayed(new Runnable() {
@@ -83,8 +90,7 @@ public class MainActivity extends AppCompatActivity {
                                     tv_activenumber1.setText(NumberFormat.getInstance().format(Integer.parseInt(str_active)));
                                     tv_recoverednumber1.setText(NumberFormat.getInstance().format(Integer.parseInt(str_recovered)));
                                     tv_deathnumber1.setText(NumberFormat.getInstance().format(Integer.parseInt(str_death)));
-                                    /*int_today = Integer.parseInt(str_total)
-                                            - (Integer.parseInt(str_total) + Integer.parseInt(str_death));*/
+                                    int_today = Integer.parseInt(str_total) - Integer.parseInt(str_todaycal);
                                     tv_todaynumber1.setText(NumberFormat.getInstance().format(int_today));
                                     dismissDialog();
                                 }}, 1000);
@@ -95,8 +101,10 @@ public class MainActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
                     } }
+
                         );
-        requestQueue.add(jsonObjectRequest);
+
+        requestQueue.add(jsonArrayRequest);
     }
     public void ShowDialog(Context context) {
         //setting up progress dialog
@@ -122,5 +130,6 @@ public class MainActivity extends AppCompatActivity {
             finish();
         return super.onOptionsItemSelected(item);
     }
+
 }
 
