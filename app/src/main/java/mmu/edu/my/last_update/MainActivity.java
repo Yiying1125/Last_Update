@@ -19,7 +19,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
@@ -30,12 +29,15 @@ import java.text.NumberFormat;
 
 public class MainActivity extends AppCompatActivity {
 
+
     private TextView tv_totalnumber1, tv_activenumber1, tv_deathnumber1, tv_recoverednumber1, tv_todaynumber1;
-    private String str_total, str_active, str_death, str_recovered, str_today, str_todaycal;
+    private String str_total, str_active, str_death, str_recovered, str_yesterday;
     private SwipeRefreshLayout swipeRefreshLayout;
     private int int_today;
     private ProgressDialog progressDialog;
     private String appUrl;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         getSupportActionBar().setTitle("TraCo-19 (Latest Update)");
+        Request<Object> myRequest;
+
         //initialise
         Init();
         //Fetch data from API
@@ -73,13 +77,13 @@ public class MainActivity extends AppCompatActivity {
                     public void onResponse(JSONArray response) {
 
                         try {
-                                JSONObject result=response.getJSONObject(response.length()-1);
-                                JSONObject yesterday_result=response.getJSONObject(response.length()-2);
+                                JSONObject result = response.getJSONObject(response.length() - 1);
+                                JSONObject yesterday_result = response.getJSONObject(response.length() - 2);
                                 str_total = result.getString("testedPositive");
                                 str_active = result.getString("activeCases");
                                 str_death = result.getString("deceased");
                                 str_recovered = result.getString("recovered");
-                                str_todaycal= yesterday_result.getString("testedPositive");
+                                str_yesterday = yesterday_result.getString("testedPositive");
 
                             Handler delayToShowProgress = new Handler();
                             delayToShowProgress.postDelayed(new Runnable() {
@@ -90,10 +94,10 @@ public class MainActivity extends AppCompatActivity {
                                     tv_activenumber1.setText(NumberFormat.getInstance().format(Integer.parseInt(str_active)));
                                     tv_recoverednumber1.setText(NumberFormat.getInstance().format(Integer.parseInt(str_recovered)));
                                     tv_deathnumber1.setText(NumberFormat.getInstance().format(Integer.parseInt(str_death)));
-                                    int_today = Integer.parseInt(str_total) - Integer.parseInt(str_todaycal);
+                                    int_today = Integer.parseInt(str_total) - Integer.parseInt(str_yesterday);
                                     tv_todaynumber1.setText(NumberFormat.getInstance().format(int_today));
                                     dismissDialog();
-                                }}, 1000);
+                                }}, 500);
                         } catch (JSONException e) { e.printStackTrace(); }
                     }},
                 new Response.ErrorListener() {
@@ -104,6 +108,10 @@ public class MainActivity extends AppCompatActivity {
 
                         );
 
+        jsonArrayRequest.setRetryPolicy(new DefaultRetryPolicy(
+                5000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         requestQueue.add(jsonArrayRequest);
     }
     public void ShowDialog(Context context) {
